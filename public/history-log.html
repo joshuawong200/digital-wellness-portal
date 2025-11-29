@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History Log</title>
+<style>
+:root {
+  --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+  --text:#7c6f57; --accent:#d5bdaf; --success:#2e7d32; --danger:#b00020;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+  color: #4a4436;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+/* Header */
+header {
+  width: 100%;
+  max-width: 980px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: .9rem 1.1rem;
+  box-shadow: 0 4px 18px rgba(213,189,175,.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header h1 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+/* Buttons */
+.btn {
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .2s ease, transform .04s ease, box-shadow .2s ease, opacity .2s;
+  box-shadow: 0 2px 8px rgba(213,189,175,.10);
+}
+.btn:hover:not([disabled]) { background: var(--bg2); }
+.btn:active:not([disabled]) { transform: translateY(1px); }
+
+/* Main card container */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 1.2rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 1rem auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.card h2 {
+  margin: 0 0 .8rem 0;
+  font-size: 1.15rem;
+  color: var(--accent);
+  letter-spacing: .2px;
+  text-align: left;
+}
+
+/* Log items */
+.log-item {
+  background: #fff6ec;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .8rem 1rem;
+  margin-bottom: .9rem;
+  box-shadow: 0 2px 8px rgba(213,189,175,.08);
+  transition: transform .2s ease, box-shadow .25s ease;
+  width: 100%;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.log-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(213,189,175,.14);
+}
+.log-date {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+.log-mood {
+  color: #6b6456;
+  font-style: italic;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* Entry box (reflection text container) */
+.entry {
+  border-left: 3px solid var(--accent);
+  padding-left: 0.75rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  width: fit-content; /* ✅ box fits to text width */
+  max-width: 100%;
+  display: inline-block;
+  background: #fff6ec;
+  border-radius: 10px;
+  padding: .6rem .8rem;
+  box-shadow: 0 2px 6px rgba(213,189,175,.08);
+}
+.entry .timestamp {
+  font-size: 0.85rem;
+  color: #7a7266;
+  margin-bottom: .2rem;
+}
+.entry div {
+  color: var(--text);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  color: #8c7b6e;
+  padding: 2rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  font-style: italic;
+}
+
+/* Date header */
+.date-header {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 1.2rem 0 .6rem 0;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: .4rem;
+  width: 100%;
+  text-align: left;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  header { flex-direction: column; gap: .6rem; }
+  header h1 { font-size: 1.3rem; }
+  .card { padding: .8rem .7rem; }
+  .btn { font-size: .95rem; padding: .5rem .8rem; }
+  .entry { width: 100%; } /* Full width for smaller screens */
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>History Log</h1>
+  <button class="btn" onclick="window.location.href='portal.html'">Back to Portal</button>
+</header>
+
+<main class="card" id="historyCard">
+  <h2>Daily Reflections</h2>
+  <div id="historyList"></div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const historyList = document.getElementById("historyList");
+  const historyCard = document.getElementById("historyCard");
+  const emptyState = document.createElement("div");
+  emptyState.className = "empty-state";
+  emptyState.textContent = "No history yet. Start logging your moods and reflections!";
+
+  try {
+    const response = await fetch("/api/history-log", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) historyList.replaceChildren(emptyState);
+      else throw new Error("Failed to fetch history log.");
+      return;
+    }
+
+    const data = await response.json();
+    if (data.length === 0) {
+      historyList.replaceChildren(emptyState);
+      return;
+    }
+
+    historyList.innerHTML = "";
+
+    const groupedByDate = data.reduce((groups, entry) => {
+      const date = new Date(entry.timestamp).toLocaleDateString();
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(entry);
+      return groups;
+    }, {});
+
+    Object.keys(groupedByDate).forEach((date) => {
+      const dateHeader = document.createElement("div");
+      dateHeader.className = "date-header";
+      dateHeader.textContent = date;
+      historyList.appendChild(dateHeader);
+
+      groupedByDate[date].forEach((entry) => {
+        const logItem = document.createElement("div");
+        logItem.className = "log-item";
+
+        const reflection = document.createElement("div");
+        reflection.className = "entry";
+        reflection.innerHTML = `
+          <div class="timestamp">${new Date(entry.timestamp).toLocaleTimeString()}</div>
+          <div>${entry.reflection_text}</div>
+        `;
+
+        logItem.appendChild(reflection);
+        historyList.appendChild(logItem);
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    historyList.replaceChildren(emptyState);
+  }
+});
+</script>
+
+</body>
+</html>

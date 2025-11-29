@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to the Digital Wellness Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #edede9 0%, #d6ccc2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: #f5ebe0;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(213, 189, 175, 0.15);
+      max-width: 400px;
+      width: 100%;
+      padding: 2.5em 2em 2em 2em;
+      text-align: center;
+      border: 1px solid #e3d5ca;
+    }
+    h2 {
+      color: #d5bdaf;
+      margin-bottom: 0.5em;
+      font-size: 2em;
+      font-weight: 700;
+    }
+    p {
+      color: #7c6f57;
+      margin-bottom: 2em;
+      font-size: 1.1em;
+    }
+    button {
+      background: #e3d5ca;
+      color: #7c6f57;
+      border: none;
+      border-radius: 8px;
+      padding: 1em 2em;
+      margin: 1em 0.5em;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.10);
+    }
+    button:hover {
+      background: #d6ccc2;
+    }
+    /* Add fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <div class="container">
+    <h2>Welcome to the Digital Wellness Tool</h2>
+    <p>Log in or register to begin your wellness journey.</p>
+    <button onclick="window.location.href='login.html'">Log In</button>
+    <button onclick="window.location.href='register.html'">Register Account</button>
+  </div>
+</body>
+</html>

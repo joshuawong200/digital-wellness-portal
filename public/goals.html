@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Setup Profile Goals & Baseline Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #edede9 0%, #d6ccc2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: #f5ebe0;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(213, 189, 175, 0.15);
+      max-width: 480px;
+      width: 100%;
+      padding: 2.5em 2em 2em 2em;
+      text-align: center;
+      border: 1px solid #e3d5ca;
+    }
+    h2 {
+      color: #d5bdaf;
+      margin-bottom: 0.5em;
+      font-size: 2em;
+      font-weight: 700;
+    }
+    p {
+      color: #7c6f57;
+      margin-bottom: 2em;
+      font-size: 1.1em;
+    }
+    .question {
+      background: #edede9;
+      border-radius: 12px;
+      margin-bottom: 1.5em;
+      padding: 1em 1em 0.5em 1em;
+      box-shadow: 0 1px 4px rgba(213, 189, 175, 0.07);
+      text-align: left; /* keep labels naturally left-aligned */
+    }
+    .q-title {
+      font-weight: 700;
+      color: #7c6f57;
+      margin-bottom: 0.7em;
+      font-size: 1.08em;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      align-items: stretch; /* let labels fill width uniformly */
+      margin-bottom: 0.5em;
+    }
+    .option {
+      background: #f5ebe0;
+      border-radius: 8px;
+      padding: 0.6em 0.8em;
+      font-weight: 500;
+      color: #7c6f57;
+      display: flex;                /* use flex so input + text line up */
+      align-items: center;
+      gap: 0.7em;                   /* space between input and text */
+      transition: background 0.2s;
+      cursor: pointer;
+      width: 100%;
+    }
+    .option:hover { background: #e3d5ca; }
+
+    .caption {
+      font-size: 0.95em;
+      color: #a08c7a;
+      margin-bottom: 0.5em;
+      margin-top: 0.2em;
+    }
+
+    /* ✅ Scope "full width" to text-like inputs only (avoid radios/checkboxes) */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.5em;
+      border-radius: 6px;
+      border: 1px solid #e3d5ca;
+      background: #edede9;
+      font-size: 1em;
+    }
+
+    /* ✅ Explicitly fix radios/checkboxes so they don't stretch */
+    input[type="radio"],
+    input[type="checkbox"] {
+      width: auto;
+      margin: 0;                    /* we'll control spacing with gap */
+      flex: 0 0 auto;
+      accent-color: #d5bdaf;       /* nicer theme color */
+      cursor: pointer;
+    }
+
+    button {
+      background: #e3d5ca;
+      color: #7c6f57;
+      border: none;
+      border-radius: 8px;
+      padding: 1em 2em;
+      margin-top: 1.5em;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.10);
+    }
+    button:hover { background: #d6ccc2; }
+
+    .success { color: green; margin-top: 1em; }
+    .error { color: red; margin-top: 1em; }
+
+    /* Add fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <div class="container">
+    <h2>Baseline Assessment</h2>
+    <p>Help us understand your habits and goals to personalize your experience.</p>
+
+    <form id="goalsForm">
+      <div class="question">
+        <div class="q-title">1. How aware are you of your daily screen time right now?</div>
+        <div class="caption">Select <b>one</b> option only.</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="awareness" value="not_aware" required> Not aware at all</label>
+          <label class="option"><input type="radio" name="awareness" value="somewhat_aware"> Somewhat aware</label>
+          <label class="option"><input type="radio" name="awareness" value="very_aware"> Very aware</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">2. What would you like to achieve with this app?</div>
+        <div class="caption">Select <b>one or more</b> options.</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="achieve" value="reduce_screen_time"> Reduce my daily screen time</label>
+          <label class="option"><input type="checkbox" name="achieve" value="manage_mood"> Better manage my mood/emotions</label>
+          <label class="option"><input type="checkbox" name="achieve" value="journaling_habit"> Build a journaling habit</label>
+          <label class="option"><input type="checkbox" name="achieve" value="track_habits"> Track and understand my digital habits</label>
+          <label class="option"><input type="checkbox" name="achieve" value="stay_consistent"> Stay consistent with healthy goals</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">3. What kind of reminders/nudges work best for you?</div>
+        <div class="caption">Select <b>one or more</b> options.</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="reminder_type" value="gentle"> Gentle daily reminders</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="motivational"> Motivational / encouraging messages</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="firm"> Direct and firm prompts</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="none"> No reminders (I’ll manage myself)</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">4. On average, how many hours do you spend on your phone weekly?</div>
+        <div class="caption">Select <b>one</b> option only.</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="weekly_screen_time" value="7" required> Less than 7 hours (≈1 hour/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="14"> 7–14 hours (≈1–2 hours/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="28"> 15–28 hours (≈2–4 hours/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="29"> More than 28 hours (4+ hours/day)</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">5. Which area is most important for you right now?</div>
+        <div class="caption">Select <b>one or more</b> options.</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="priority_area" value="reduce_screen_time"> Reducing screen time</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="improve_mood"> Improving mood awareness</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="journaling_consistency"> Building consistency with journaling</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="digital_balance"> Achieving overall digital balance</label>
+        </div>
+      </div>
+
+      <button type="submit">Save & Continue</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // On page load, check if user already completed goals
+    async function checkGoalsCompleted() {
+      const user_id = localStorage.getItem('user_id');
+      if (user_id) {
+        try {
+          const res = await fetch(`/api/goals?user_id=${user_id}`);
+          if (res.ok) {
+            const result = await res.json();
+            if (result.completed) {
+              // Show options to the user at the top of the page
+              const container = document.querySelector('.container');
+              const optionsDiv = document.createElement('div');
+              optionsDiv.style.marginBottom = '1.5em';
+              optionsDiv.innerHTML = `
+                <p>Your goals are already set. What would you like to do?</p>
+                <button id="modifyGoals" style="margin-right: 1em;">Modify Goals</button>
+                <button id="returnPortal">Return to Portal</button>
+              `;
+              container.insertBefore(optionsDiv, container.firstChild);
+
+              document.getElementById('modifyGoals').addEventListener('click', () => {
+                // Allow user to modify goals
+                container.removeChild(optionsDiv);
+              });
+
+              document.getElementById('returnPortal').addEventListener('click', () => {
+                // Redirect back to portal
+                window.location.replace('portal.html');
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Error checking goals:', err); // Log error for debugging
+        }
+      }
+    }
+    checkGoalsCompleted();
+    // Helper: get user_id from localStorage (assumes login/register sets it)
+    function getUserId() {
+      return localStorage.getItem('user_id');
+    }
+
+    document.getElementById('goalsForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+
+      function showError(msg) {
+        document.getElementById('result').innerHTML = '<p class="error">' + msg + '</p>';
+      }
+
+      // Validate required questions
+      if (!form.awareness.value || !form.weekly_screen_time.value) {
+        showError('Please answer all required questions.');
+        return;
+      }
+
+      // Collect multi-choice answers
+      const achieve = Array.from(form.querySelectorAll('input[name="achieve"]:checked')).map(cb => cb.value);
+      if (achieve.length === 0) {
+        showError('Please select at least one achievement goal.');
+        return;
+      }
+
+      const reminder_type = Array.from(form.querySelectorAll('input[name="reminder_type"]:checked')).map(cb => cb.value);
+      const priority_area = Array.from(form.querySelectorAll('input[name="priority_area"]:checked')).map(cb => cb.value);
+
+      // Prepare data object
+      const data = {
+        user_id: getUserId(),
+        awareness: form.awareness.value,
+        weekly_screen_time: form.weekly_screen_time.value,
+        achieve,
+        reminder_type,
+        priority_area
+      };
+
+      // Submit data to server
+      try {
+        const res = await fetch('/api/goals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          const result = await res.json();
+          document.getElementById('result').innerHTML = '<p class="success">Goals saved successfully! Redirecting...</p>';
+          setTimeout(() => {
+            window.location.replace('checkin.html');
+          }, 2000);
+        } else {
+          showError('Failed to save goals. Please try again.');
+        }
+      } catch (err) {
+        showError('Error: ' + err.message);
+      }
+    });
+
+    async function populateGoalsForm() {
+      const user_id = getUserId();
+      if (user_id) {
+        try {
+          const res = await fetch(`/api/goals?user_id=${user_id}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data) {
+              // Populate form fields with pre-saved data
+              document.querySelector(`input[name="awareness"][value="${data.awareness}"]`).checked = true;
+              document.querySelector(`input[name="weekly_screen_time"][value="${data.weekly_screen_time}"]`).checked = true;
+
+              // Populate multi-choice fields
+              data.achieve.forEach(value => {
+                const checkbox = document.querySelector(`input[name="achieve"][value="${value}"]`);
+                if (checkbox) checkbox.checked = true;
+              });
+
+              data.reminder_type.forEach(value => {
+                const checkbox = document.querySelector(`input[name="reminder_type"][value="${value}"]`);
+                if (checkbox) checkbox.checked = true;
+              });
+
+              data.priority_area.forEach(value => {
+                const checkbox = document.querySelector(`input[name="priority_area"][value="${value}"]`);
+                if (checkbox) checkbox.checked = true;
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Error populating goals form:', err);
+        }
+      }
+    }
+
+    // Call populateGoalsForm on page load
+    populateGoalsForm();
+  </script>
+</body>
+</html>

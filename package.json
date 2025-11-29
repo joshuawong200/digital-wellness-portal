@@ -1,0 +1,17 @@
+{
+  "name": "digital-wellness-backend",
+  "version": "1.0.0",
+  "description": "Backend for Digital Wellness Tool (Node.js/Express, SQLite, JWT)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^2.0.2",
+    "sqlite3": "^5.1.6"
+  }
+}

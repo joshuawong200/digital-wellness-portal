@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Wellness Portal</title>
+  <style>
+    :root{
+      --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+      --text:#7c6f57; --accent:#d5bdaf; --success:#2e7d32; --danger:#b00020;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      color:#4a4436; padding: 1rem;
+      display:flex; flex-direction:column; align-items:center; min-height:100vh; gap:1rem;
+    }
+
+    header{
+  width:100%; max-width: 980px; background: var(--card); color: var(--text);
+  border:1px solid var(--border); border-radius:18px; padding: .9rem 1.1rem;
+  box-shadow: 0 4px 18px rgba(213,189,175,.18);
+  display:flex; justify-content: space-between; align-items:center; gap:.75rem;
+  position:sticky; top:0; z-index:100;
+    }
+    header h1{ margin:0; color: var(--accent); font-size:1.6rem; font-weight:800; letter-spacing:.2px; }
+  /* Center header elements vertically */
+  #welcome-user, #logout {
+    align-self: center;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+    .btn{
+      background: var(--border); color: var(--text); border:none; border-radius:10px;
+      padding:.6rem 1rem; font-weight:800; cursor:pointer;
+      transition: background .2s ease, transform .04s ease, box-shadow .2s ease, opacity .2s;
+      box-shadow: 0 2px 8px rgba(213,189,175,.10);
+    }
+    .btn:hover:not([disabled]){ background: var(--bg2); }
+    .btn:active:not([disabled]){ transform: translateY(1px); }
+    .btn-outline{ background:#e3d5ca; border:1px solid var(--bg2); font-weight:700; }
+    .btn[disabled]{ opacity:.5; background:#ececec !important; color:#a08c7a !important; cursor:not-allowed; }
+
+    /* Loading spinner and chart placeholder */
+    .loading-box {
+      width:100%; height:260px; max-width:100%; background:#ececec; border-radius:14px;
+      display:flex; align-items:center; justify-content:center; margin-top:.6rem; position:relative;
+    }
+    .spinner {
+      width:38px; height:38px; border:5px solid #d6ccc2; border-top:5px solid #2196f3;
+      border-radius:50%; animation: spin 1s linear infinite; margin:auto;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .card{
+  background: var(--card); border:1px solid var(--border); border-radius:18px;
+  padding: 1.1rem 1rem; width:100%; max-width: 980px;
+  box-shadow: 0 4px 24px rgba(213,189,175,.15);
+  opacity:0; transform:translateY(24px); transition:opacity .7s cubic-bezier(.4,.2,.2,1),transform .7s cubic-bezier(.4,.2,.2,1);
+    }
+    .card h2{ margin:0 0 .8rem 0; font-size:1.15rem; color: var(--accent); letter-spacing:.2px; }
+    .meta{ color:#a08c7a; margin:.25rem 0 .75rem 0; }
+
+    .card .actions{ margin-top:.7rem; display:flex; gap:.6rem; flex-wrap:wrap; }
+
+    .grid{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .8rem; width:100%; max-width:980px;
+    }
+    .grid .grid-btn{
+  background: var(--border); color: var(--text); border:none; border-radius:14px;
+  padding: .9rem 1rem; font-size:1rem; font-weight:800; cursor:pointer; text-align:center;
+  box-shadow: 0 2px 8px rgba(213,189,175,.1); transition: background .2s ease, transform .04s ease;
+    }
+    .grid .grid-btn:hover{ background: var(--bg2); }
+    .grid .grid-btn:active{ transform: translateY(1px); }
+
+    canvas{ width:100%; max-width:100%; margin-top:.6rem; }
+
+    .pill{
+      display:inline-block; background:#edede9; border:1px solid var(--border); color:#6b6456;
+      padding:.35rem .6rem; border-radius:999px; font-weight:700; font-size:.9rem; margin-right:.4rem;
+    }
+
+    /* Compact correlation card */
+    .correlation-card {
+      display:flex; flex-direction:column; gap:.5rem;
+      align-items:flex-start; justify-content:center;
+    }
+    .corr-badge {
+      font-weight:800; background:#fff6ec; color:var(--text);
+      border:1px solid var(--border); border-radius:12px;
+      padding:.4rem .75rem; display:inline-block;
+    }
+    .corr-insight {
+      color:#6b6456; font-style:italic;
+    }
+
+    @media (max-width: 540px){ header h1{ font-size:1.3rem; } }
+  @media (max-width: 900px){
+    .card{max-width:98vw;}
+    .grid{grid-template-columns:1fr;}
+    .grid .grid-btn{font-size:.98rem;padding:.8rem .7rem;}
+  }
+  @media (max-width: 700px){
+    body{padding:.7rem .2rem;}
+    header{padding:.7rem .2rem;}
+    .card{padding:.7rem .2rem;}
+    .pill{font-size:.92rem;}
+  }
+  @media (max-width: 540px){
+    header h1{ font-size:1.1rem; }
+    .card{padding:.5rem .1rem;}
+    .pill{font-size:.88rem;}
+    .grid .grid-btn{font-size:.92rem;padding:.6rem .3rem;}
+  }
+  </style>
+</head>
+<body>
+  <header>
+  <!-- Toast notification -->
+  <div id="toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#2e7d32;color:#fff;padding:.8em 1.5em;border-radius:12px;font-weight:700;box-shadow:0 2px 12px rgba(46,125,50,.18);z-index:4000;font-size:1.08em;opacity:0;transition:opacity .4s;pointer-events:none;">Reflection saved!</div>
+    <h1>Digital Wellness Portal</h1>
+    <div id="welcome-user" style="font-weight:700; color:var(--accent); margin-right:1rem;">Welcome, —</div>
+    <button id="logout" class="btn">Logout</button>
+  </header>
+
+  <section class="card" aria-labelledby="todayTitle">
+    <h2 id="todayTitle">Today's Summary</h2>
+    <div class="meta">Quick snapshot of how you're doing today.</div>
+    <p>Date: <span id="today-date" class="pill">—</span></p>
+    <p>Mood: <span id="today-mood" class="pill">—</span></p>
+    <p>Screen Time: <span id="today-screen-time" class="pill">—</span></p>
+    <div class="actions">
+      <button class="btn" id="log-today-btn">Log Today</button>
+      <button class="btn btn-outline" id="add-reflection-btn">Add Reflection</button>
+    </div>
+    <div id="entry-notification" style="display:none; color:var(--danger); font-weight:700; margin-top:.7rem;"></div>
+  </section>
+
+  <section class="card" aria-labelledby="overviewTitle">
+  <div class="insights-panel" style="margin-bottom:1.1em;">
+  <button id="toggleInsights" class="btn btn-outline" style="float:right; margin-left:.7em; margin-bottom:.3em;">Show Insights ▼</button>
+  <button id="refreshInsights" class="btn" style="float:right; margin-right:.7em; margin-bottom:.3em;">Refresh Insights</button>
+    <div id="insightsContent" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 id="overviewTitle" style="margin-bottom:0;">7-Day Overview (Mood + Screen Time)</h2>
+        <div id="corrBadgeMini" style="min-width:90px;text-align:center;padding:.45em 1em;border-radius:14px;font-weight:800;font-size:1.08em;box-shadow:0 2px 8px rgba(0,0,0,.08);background:#ececec;color:#7c6f57;transition:background .3s,color .3s;">r = —</div>
+      </div>
+      <div id="corrInsightMini" style="text-align:right;color:#a08c7a;font-size:.98em;margin:.2em 0 .7em 0;min-height:1.2em;">—</div>
+    </div>
+  </div>
+  <div class="meta">Line = mood (1–10), Bars = screen time (hours).</div>
+  <div id="overview-message" style="display:none; color:var(--danger); font-weight:700; margin-bottom:.7rem;"></div>
+  <div id="chart-placeholder" style="display:none; text-align:center; color:#a08c7a; font-size:1.08em; margin-top:2.5em;">No chart data available yet. Log your first entry to see your progress!</div>
+  <div id="chart-loading" class="loading-box"><div class="spinner"></div></div>
+  <canvas id="comboChart" style="display:none;"></canvas>
+  </section>
+
+  <section class="card" aria-labelledby="moodScaleTitle">
+    <h2 id="moodScaleTitle">Mood Scale Reference</h2>
+    <div id="mood-scale-widget" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.7rem;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😢</span>
+        <span style="font-size:.98em;color:#b00020;font-weight:700;">1</span>
+        <span style="font-size:.92em;color:#a08c7a;">Extremely Horrible</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😟</span>
+        <span style="font-size:.98em;color:#b00020;font-weight:700;">2</span>
+        <span style="font-size:.92em;color:#a08c7a;">Very Bad</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😕</span>
+        <span style="font-size:.98em;color:#b00020;font-weight:700;">3</span>
+        <span style="font-size:.92em;color:#a08c7a;">Bad</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😐</span>
+        <span style="font-size:.98em;color:#b00020;font-weight:700;">4</span>
+        <span style="font-size:.92em;color:#a08c7a;">Below Average</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">🙂</span>
+        <span style="font-size:.98em;color:#7c6f57;font-weight:700;">5</span>
+        <span style="font-size:.92em;color:#a08c7a;">Average</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😊</span>
+        <span style="font-size:.98em;color:#2e7d32;font-weight:700;">6</span>
+        <span style="font-size:.92em;color:#a08c7a;">Slightly Good</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😁</span>
+        <span style="font-size:.98em;color:#2e7d32;font-weight:700;">7</span>
+        <span style="font-size:.92em;color:#a08c7a;">Good</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😁</span>
+        <span style="font-size:.98em;color:#2e7d32;font-weight:700;">8</span>
+        <span style="font-size:.92em;color:#a08c7a;">Very Good</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">😄</span>
+        <span style="font-size:.98em;color:#2e7d32;font-weight:700;">9</span>
+        <span style="font-size:.92em;color:#a08c7a;">Excellent</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+        <span style="font-size:2em;">🤩</span>
+        <span style="font-size:.98em;color:#2e7d32;font-weight:700;">10</span>
+        <span style="font-size:.92em;color:#a08c7a;">Outstanding</span>
+      </div>
+    </div>
+    <div style="text-align:center;color:#a08c7a;font-size:.98em;margin-top:.7em;">Use this scale to interpret your average mood and daily check-ins.</div>
+  </section>
+  </section>
+
+  <section class="card" aria-labelledby="trendTitle">
+    <h2 id="trendTitle">Trend Summary</h2>
+  <p style="margin-bottom:.3rem;">Average Mood (7 d): <span id="trend-avg-mood" class="pill">—</span></p>
+  <p>Average Screen Time (7 d): <span id="trend-avg-time" class="pill">—</span></p>
+    <p>Insight: <span id="trend-hint">—</span></p>
+  </section>
+
+  <!-- 🟫 New compact correlation insight card -->
+  <section class="card" aria-labelledby="corrTitle">
+    <h2 id="corrTitle">Correlation Insight <span id="corrInfoIcon" style="cursor:pointer; color:#2196f3; font-size:1.1em;">ⓘ</span></h2>
+  <div id="corrTooltip" style="display:none; position:fixed; background:#fff; color:#333; border:1px solid #e3d5ca; border-radius:8px; padding:.7em 1em; font-size:.98em; box-shadow:0 2px 8px rgba(0,0,0,.12); z-index:3000; max-width:260px;">
+      <b>Correlation</b> measures the relationship between screen time and mood.<br>
+      Values close to +1 or -1 indicate a strong relationship; values near 0 mean little or no relationship.
+    </div>
+    <div class="correlation-card">
+      <span id="corrBadgeCompact" class="corr-badge" style="transition:background .3s, color .3s;">r = -0.42</span>
+      <div id="corrInterpret" style="margin-top:.7em; color:#6b6456; font-size:.98em; background:#f5ebe0; border-radius:10px; padding:.7em 1em;">
+        <b>How to interpret r:</b><br>
+        <ul style="margin:.5em 0 .2em 1.2em; padding:0;">
+          <li><b>r ≈ 0</b>: No clear relationship between mood and screen time.</li>
+          <li><b>r &gt; 0</b>: Higher screen time tends to align with higher mood.</li>
+          <li><b>r &lt; 0</b>: Higher screen time tends to align with lower mood.</li>
+          <li><b>|r| &gt; 0.7</b>: Strong relationship; consider adjusting habits if negative.</li>
+        </ul>
+        <span style="color:#a08c7a; font-size:.95em;">Correlation does not prove cause—use this as a guide to reflect on your habits.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ Quick actions -->
+  <section class="grid" aria-label="Quick actions">
+
+  <!-- FR007 Reflective Prompt Modal -->
+  <div id="reflectiveOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:2000;"></div>
+  <div id="reflectiveModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.25); padding:1.2rem; width:min(92vw,380px); z-index:2001; text-align:center;">
+    <h3 style="color:var(--text);margin:.2rem 0 .6rem 0;">Reflective Prompt</h3>
+    <p style="color:#6b6456;">Take a moment to reflect: What is your intention for today?</p>
+    <textarea id="reflectiveInput" maxlength="250" style="width:100%;min-height:80px;margin-bottom:.7rem;border-radius:10px;border:1px solid var(--border);background:#edede9;font-size:1rem;color:#4a4436;"></textarea>
+  <div id="reflectiveCharCount" style="text-align:right;color:#a08c7a;font-size:.97em;margin-bottom:.3rem;">0/250</div>
+  <div id="reflectiveError" style="color:var(--danger);font-weight:700;margin-bottom:.5rem;display:none;"></div>
+    <button class="btn" id="reflectiveSave">Save Reflection</button>
+    <button class="btn btn-outline" id="reflectiveCancel" style="margin-left:.7rem;">Cancel</button>
+    <div style="margin-top:.5rem;color:#a08c7a;font-size:.9rem;">Max 250 characters</div>
+  </div>
+    <button class="grid-btn" onclick="location.href='goals-options.html'">View Saved Goals</button>
+    <button class="grid-btn" onclick="location.href='history-log.html'">View History Log</button>
+    <button class="grid-btn" onclick="location.href='weekly-summary.html'">Generate Weekly Wellness Summary</button>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // Refresh Insights button logic
+    document.getElementById('refreshInsights').onclick = function() {
+      fetchOverview7Days();
+      showToast('Insights refreshed!');
+    };
+    // Collapsible Insights panel logic
+    const toggleBtn = document.getElementById('toggleInsights');
+    const insightsContent = document.getElementById('insightsContent');
+    let insightsOpen = false;
+    toggleBtn.onclick = function() {
+      insightsOpen = !insightsOpen;
+      insightsContent.style.display = insightsOpen ? 'block' : 'none';
+      toggleBtn.textContent = insightsOpen ? 'Hide Insights ▲' : 'Show Insights ▼';
+    };
+  // Auto-refresh Today's Summary when check-in is completed
+  window.addEventListener('refreshTodaySummary', fetchTodaySummary);
+    // Fade-in animation for cards on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.card').forEach(function(card, i) {
+        setTimeout(function(){
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 120 + i*80);
+      });
+    });
+    // Mood emoji widget logic
+    function updateMoodEmojiWidget(avgMood) {
+  const pointer = document.getElementById('mood-emoji-pointer');
+  // Emoji scale: 1=😞, 3=😐, 5=🙂, 7=😊, 9=😁
+  let emoji = '😞';
+  if (avgMood >= 9) emoji = '😁';
+  else if (avgMood >= 7) emoji = '😊';
+  else if (avgMood >= 5) emoji = '🙂';
+  else if (avgMood >= 3) emoji = '😐';
+  if (pointer) pointer.textContent = emoji;
+    }
+    // Correlation info icon tooltip logic
+    const corrInfoIcon = document.getElementById('corrInfoIcon');
+    const corrTooltip = document.getElementById('corrTooltip');
+    corrInfoIcon.addEventListener('mouseenter', showCorrTooltip);
+    corrInfoIcon.addEventListener('mouseleave', hideCorrTooltip);
+    corrInfoIcon.addEventListener('click', toggleCorrTooltip);
+    function showCorrTooltip(e) {
+  const rect = corrInfoIcon.getBoundingClientRect();
+  corrTooltip.style.display = 'block';
+  // Calculate tooltip position above or beside icon
+  let top = rect.top - corrTooltip.offsetHeight - 12;
+  let left = rect.left + rect.width/2 - corrTooltip.offsetWidth/2;
+  // If not enough space above, show below
+  if (top < 0) top = rect.bottom + 12;
+  // Prevent overflow on right
+  if (left + corrTooltip.offsetWidth > window.innerWidth) left = window.innerWidth - corrTooltip.offsetWidth - 12;
+  // Prevent overflow on left
+  if (left < 0) left = 12;
+  corrTooltip.style.top = top + 'px';
+  corrTooltip.style.left = left + 'px';
+    }
+    function hideCorrTooltip() {
+      corrTooltip.style.display = 'none';
+    }
+    function toggleCorrTooltip(e) {
+      if (corrTooltip.style.display === 'block') {
+        hideCorrTooltip();
+      } else {
+        showCorrTooltip(e);
+      }
+    }
+    // FR007 Reflective Prompt Modal Logic
+    let reflectiveShownToday = false;
+    function showReflectiveModal() {
+      if (reflectiveShownToday) return;
+      document.getElementById('reflectiveOverlay').style.display = 'block';
+      document.getElementById('reflectiveModal').style.display = 'block';
+      reflectiveShownToday = true;
+    }
+    function hideReflectiveModal() {
+      document.getElementById('reflectiveOverlay').style.display = 'none';
+      document.getElementById('reflectiveModal').style.display = 'none';
+    }
+    document.getElementById('reflectiveCancel').onclick = hideReflectiveModal;
+    document.getElementById('reflectiveOverlay').onclick = hideReflectiveModal;
+    // Live character counter logic
+    window.addEventListener('DOMContentLoaded', function() {
+      const reflectiveInput = document.getElementById('reflectiveInput');
+      const reflectiveCharCount = document.getElementById('reflectiveCharCount');
+      function updateCharCount() {
+        reflectiveCharCount.textContent = reflectiveInput.value.length + '/250';
+      }
+      reflectiveInput.addEventListener('input', updateCharCount);
+      // Initialize counter on modal open
+      document.getElementById('reflectiveModal').addEventListener('transitionend', updateCharCount);
+      updateCharCount();
+    });
+
+    document.getElementById('reflectiveSave').onclick = async function() {
+      const input = document.getElementById('reflectiveInput').value.trim();
+      const errorEl = document.getElementById('reflectiveError');
+      if (!input) {
+        errorEl.textContent = 'Reflection cannot be blank.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (input.length > 250) {
+        errorEl.textContent = 'Reflection is too long.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      errorEl.style.display = 'none';
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('User is not logged in.');
+        }
+
+        const response = await fetch('/api/reflection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ reflectionText: input })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to save reflection.');
+        }
+
+        hideReflectiveModal();
+        showToast('Reflection saved!');
+      } catch (err) {
+        console.error('Error saving reflection:', err.message);
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+      }
+    };
+
+    // Toast logic
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      toast.style.opacity = '1';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 400);
+      }, 1800);
+    }
+    // Add event listeners for Log Today and Add Reflection buttons
+    // Redirect to checkin.html, then to reflection.html after successful check-in
+    document.getElementById('log-today-btn').addEventListener('click', function() {
+      window.location.href = 'checkin.html?redirect=reflection';
+      // After check-in, trigger summary refresh (if returning to portal)
+      setTimeout(function(){
+        window.dispatchEvent(new Event('refreshTodaySummary'));
+      }, 1200);
+    });
+    document.getElementById('add-reflection-btn').addEventListener('click', function() {
+      window.location.href = 'reflection.html';
+    });
+    // ----- WELCOME USER FETCH -----
+    async function fetchWelcomeUser() {
+      const token = localStorage.getItem('token');
+      const welcomeEl = document.getElementById('welcome-user');
+      if (!token) {
+        welcomeEl.textContent = 'Welcome, —';
+        return;
+      }
+      try {
+        const res = await fetch('/api/user', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const user = await res.json();
+          welcomeEl.textContent = 'Welcome, ' + (user.name || 'user');
+        } else {
+          welcomeEl.textContent = 'Welcome, —';
+        }
+      } catch {
+        welcomeEl.textContent = 'Welcome, —';
+      }
+    }
+    fetchWelcomeUser();
+    (function(){
+      const css = getComputedStyle(document.documentElement);
+      const text = css.getPropertyValue('--text').trim() || '#7c6f57';
+      const border = css.getPropertyValue('--border').trim() || '#e3d5ca';
+      const accent = css.getPropertyValue('--accent').trim() || '#d5bdaf';
+      if (window.Chart){
+        Chart.defaults.color = text;
+        Chart.defaults.borderColor = border;
+        Chart.defaults.font.family = 'Arial, sans-serif';
+        Chart.defaults.scale.grid.color = border;
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        window.WELLNESS_THEME_COLORS = [accent, '#c8b4a6', '#b89f90', '#a88c7b', '#987967'];
+      }
+    })();
+
+    // ----- TODAY'S SUMMARY FETCH -----
+    async function fetchTodaySummary() {
+      const token = localStorage.getItem('token');
+      const todayDate = new Date().toISOString().split('T')[0];
+      document.getElementById('today-date').textContent = todayDate;
+      if (!token) {
+        document.getElementById('today-mood').textContent = '—';
+        document.getElementById('today-screen-time').textContent = '—';
+        document.getElementById('entry-notification').textContent = 'You are not logged in.';
+        document.getElementById('entry-notification').style.display = 'block';
+  setTimeout(showReflectiveModal, 25000); // Show after 25 seconds
+        return;
+      }
+      try {
+        const res = await fetch('/api/today', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('today-mood').textContent = data.mood || '—';
+          document.getElementById('today-screen-time').textContent = data.screenTime ? (data.screenTime/60).toFixed(1) + 'h' : '—';
+          document.getElementById('entry-notification').style.display = 'none';
+          // Disable buttons if today's entry exists
+          document.getElementById('log-today-btn').disabled = true;
+          document.getElementById('add-reflection-btn').disabled = true;
+        } else {
+          document.getElementById('today-mood').textContent = '—';
+          document.getElementById('today-screen-time').textContent = '—';
+          let msg = 'No entry found for today.';
+          try { const err = await res.json(); if (err.error) msg = err.error; } catch {}
+          document.getElementById('entry-notification').textContent = msg;
+          document.getElementById('entry-notification').style.display = 'block';
+          // Enable buttons if no entry exists
+          document.getElementById('log-today-btn').disabled = false;
+          document.getElementById('add-reflection-btn').disabled = false;
+          // Trigger FR007 reflective prompt after 25 seconds
+          setTimeout(showReflectiveModal, 25000);
+        }
+      } catch (err) {
+        document.getElementById('today-mood').textContent = '—';
+        document.getElementById('today-screen-time').textContent = '—';
+        document.getElementById('entry-notification').textContent = 'Error fetching summary.';
+        document.getElementById('entry-notification').style.display = 'block';
+        document.getElementById('log-today-btn').disabled = false;
+        document.getElementById('add-reflection-btn').disabled = false;
+      }
+    }
+    fetchTodaySummary();
+
+
+    // ----- REAL 7-DAY OVERVIEW CHART -----
+    async function fetchOverview7Days() {
+  // Show loading spinner and placeholder
+  document.getElementById('chart-loading').style.display = 'flex';
+  document.getElementById('comboChart').style.display = 'none';
+  const token = localStorage.getItem('token');
+  const comboCtx = document.getElementById('comboChart').getContext('2d');
+  let labels = [], mood = [], hours = [];
+  let errorMsg = '';
+  if (!token) {
+    labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    mood = [];
+    hours = [];
+    errorMsg = 'You are not logged in.';
+  } else {
+    try {
+      const res = await fetch('/api/overview-7days', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        labels = data.map(d => {
+          const dt = new Date(d.date);
+          return dt.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+        });
+        mood = data.map(d => Number(d.mood) || 0);
+        hours = data.map(d => d.screenTime ? (d.screenTime/60) : 0);
+      } else {
+        errorMsg = 'Unable to load 7-day overview.';
+        mood = [];
+        hours = [];
+      }
+    } catch {
+      errorMsg = 'Network error. Please try again.';
+      mood = [];
+      hours = [];
+    }
+  }
+  // Debug: log raw data received from backend (after initialization and population)
+  // (Removed duplicate function definition)
+
+      function mean(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+      function pearson(x,y){
+        const mx = mean(x), my = mean(y); let num=0, dx=0, dy=0;
+        for (let i=0;i<x.length;i++){ const a=x[i]-mx, b=y[i]-my; num+=a*b; dx+=a*a; dy+=b*b; }
+        return num / Math.sqrt(dx*dy || 1);
+      }
+
+      // Minimum data rule: require at least 7 days
+      const minDays = 7;
+      const overviewMsg = document.getElementById('overview-message');
+      const chartEl = document.getElementById('comboChart');
+      if (mood.length === 0 || hours.length === 0) {
+  document.getElementById('chart-loading').style.display = 'none';
+  document.getElementById('comboChart').style.display = 'none';
+  overviewMsg.textContent = 'No data available yet.';
+  overviewMsg.style.display = 'block';
+  document.getElementById('chart-placeholder').style.display = 'block';
+  // Clear trend/correlation summary
+  document.getElementById('trend-avg-mood').textContent = '—';
+  document.getElementById('trend-avg-time').textContent = '—';
+  document.getElementById('corrBadgeCompact').textContent = 'r = —';
+  document.getElementById('trend-hint').textContent = '';
+  return;
+      } else {
+  overviewMsg.style.display = 'none';
+  document.getElementById('chart-loading').style.display = 'none';
+  chartEl.style.display = 'block';
+  document.getElementById('chart-placeholder').style.display = 'none';
+      }
+
+      // Draw chart as before (always if any data)
+      // Update compact correlation badge above chart
+      const miniBadge = document.getElementById('corrBadgeMini');
+      const miniInsight = document.getElementById('corrInsightMini');
+      if (mood.length >= minDays && hours.length >= minDays) {
+        const r = pearson(hours, mood);
+        miniBadge.textContent = 'r = ' + r.toFixed(2);
+        // Color coding
+        if (Math.abs(r) >= 0.7) {
+          miniBadge.style.background = r > 0 ? '#c8e6c9' : '#ffcdd2';
+          miniBadge.style.color = r > 0 ? '#2e7d32' : '#b00020';
+        } else if (Math.abs(r) >= 0.4) {
+          miniBadge.style.background = r > 0 ? '#e0f7fa' : '#ffe0b2';
+          miniBadge.style.color = r > 0 ? '#0277bd' : '#f57c00';
+        } else {
+          miniBadge.style.background = '#ececec';
+          miniBadge.style.color = '#7c6f57';
+        }
+        // Insight sentence
+        let insight = '—';
+        if (Math.abs(r) >= 0.7) insight = r > 0 ? 'Strong positive relationship.' : 'Strong negative relationship.';
+        else if (Math.abs(r) >= 0.4) insight = r > 0 ? 'Moderate positive relationship.' : 'Moderate negative relationship.';
+        else insight = 'No clear relationship.';
+        miniInsight.textContent = insight;
+      } else {
+        miniBadge.textContent = 'r = —';
+        miniBadge.style.background = '#ececec';
+        miniBadge.style.color = '#7c6f57';
+        miniInsight.textContent = '—';
+      }
+      const chart = new Chart(comboCtx,{
+        type:'bar',
+        data:{
+          labels,
+          datasets:[
+            {
+              type:'bar',label:'Screen Time (h)',data:hours.map(h=>Number(h).toFixed(1)),yAxisID:'yHours',
+              backgroundColor:'#2196f3', // Solid blue columns
+              borderRadius:8,borderSkipped:false,
+              order:1 // Draw bars behind line
+            },
+            {
+              type:'line',label:'Mood (1–10)',data:mood,yAxisID:'yMood',
+              tension:.35,pointRadius:5,pointHoverRadius:7,borderWidth:4,
+              borderColor:'#d32f2f', // Bold red accent for visibility
+              backgroundColor:'#d32f2f',
+              fill:false,
+              order:2 // Draw line in front of bars
+            }
+          ]
+        },
+        options:{
+          responsive:true,interaction:{mode:'index',intersect:false},
+          scales:{
+            yHours:{position:'left',title:{display:true,text:'Hours'},suggestedMin:0,
+              suggestedMax:Math.max(6,Math.ceil(Math.max(...hours)+1))},
+            yMood:{position:'right',title:{display:true,text:'Mood (1–10)'},min:1,max:10,
+              grid:{drawOnChartArea:false}}
+          },
+          plugins:{
+            tooltip:{
+              callbacks:{
+                label:function(ctx){
+                  if(ctx.dataset.type==='bar'){
+                    return `Screen Time: ${Number(ctx.parsed.y).toFixed(2)} hours`;
+                  } else {
+                    return `Mood: ${ctx.parsed.y}/10`;
+                  }
+                }
+              },
+              backgroundColor:'#fff',
+              titleColor:'#7c6f57',
+              bodyColor:'#4a4436',
+              borderColor:'#e3d5ca',
+              borderWidth:1,
+              padding:10,
+              displayColors:false,
+              caretSize:7
+            }
+          }
+        }
+      });
+
+      // Trend/correlation summary only if at least 7 days
+      if (mood.length < minDays || hours.length < minDays) {
+        document.getElementById('trend-avg-mood').textContent = '—';
+        document.getElementById('trend-avg-time').textContent = '—';
+        document.getElementById('corrBadgeCompact').textContent = 'r = —';
+        document.getElementById('trend-hint').textContent = 'Not enough data for trend analysis. Log at least 7 days to see insights.';
+        // Only show r value in correlation card
+        return;
+      }
+
+      // ----- TREND + CORRELATION INSIGHT -----
+      const avgMood=mean(mood);
+      const avgHours=mean(hours);
+      const r=pearson(hours,mood);
+      document.getElementById('trend-avg-mood').textContent=avgMood.toFixed(1);
+      updateMoodEmojiWidget(avgMood);
+      document.getElementById('trend-avg-time').textContent=(avgHours ? avgHours.toFixed(1) : '—')+'h';
+
+      // Motivational message if mood improves week-to-week
+      let motivationalMsg = '';
+      if (mood.length >= 14) {
+        // Compare last 7 days vs previous 7 days
+        const prevMood = mean(mood.slice(0,7));
+        const recentMood = mean(mood.slice(-7));
+        if (recentMood > prevMood) {
+          motivationalMsg = 'Keep it up! Your mood has improved compared to last week.';
+        } else if (recentMood < prevMood) {
+          motivationalMsg = 'Reflect on what changed this week. Small steps can help boost your mood.';
+        } else {
+          motivationalMsg = 'Consistency is key! Stay mindful and keep tracking.';
+        }
+      }
+      if (motivationalMsg) {
+        document.getElementById('trend-hint').textContent += ' ' + motivationalMsg;
+      }
+      // Color-coded badge for correlation strength
+      const badge = document.getElementById('corrBadgeCompact');
+      badge.textContent = 'r = ' + r.toFixed(2);
+      badge.style.background = '#fff6ec';
+      badge.style.color = '#7c6f57';
+      if (Math.abs(r) >= 0.7) {
+        badge.style.background = r > 0 ? '#c8e6c9' : '#ffcdd2'; // green for strong positive, red for strong negative
+        badge.style.color = r > 0 ? '#2e7d32' : '#b00020';
+      } else if (Math.abs(r) >= 0.4) {
+        badge.style.background = r > 0 ? '#e0f7fa' : '#ffe0b2'; // blue for moderate positive, orange for moderate negative
+        badge.style.color = r > 0 ? '#0277bd' : '#f57c00';
+      } else {
+        badge.style.background = '#ececec'; // gray for weak/no correlation
+        badge.style.color = '#7c6f57';
+      }
+
+      // Positive reinforcement and suggestions
+      let insight='Keep logging to uncover your pattern.';
+      if(Math.abs(r)<0.2) insight='Mood and screen time show little relationship this week.';
+      else if(r<0) {
+        if (avgMood >= 7) insight = 'Great job keeping your mood up despite higher screen time!';
+        else insight = 'Higher screen time tends to align with lower mood this week. Try reducing screen time for a better mood.';
+      }
+      else {
+        if (avgMood >= 7) insight = 'Excellent! Higher screen time is not affecting your mood negatively.';
+        else insight = 'Higher screen time tends to align with higher mood this week. Stay mindful and keep balancing your habits.';
+      }
+      document.getElementById('trend-hint').textContent=insight;
+      // Only show r value in correlation card
+    }
+    fetchOverview7Days();
+  // Listen for custom event to refresh chart
+  window.addEventListener('refreshOverviewChart', fetchOverview7Days);
+
+    // ----- LOGOUT + DATA FETCH (unchanged placeholders) -----
+    document.getElementById('logout').addEventListener('click',()=>{
+      localStorage.removeItem('token');
+      window.location.href='login.html';
+    });
+  </script>
+
+  <script>
+  // FR012: Nudges and Reminders
+  let reminderTimeout;
+  let reflectiveTimeout;
+  let reminderShown = false;
+  const reminderFrequency = 3600000; // 1 hour frequency limit
+
+  function showReminderPopup() {
+    if (reminderShown) return; // Prevent duplicate reminders
+
+    const overlay = document.createElement('div');
+    overlay.id = 'reminderOverlay';
+    overlay.style = `
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 2000;
+    `;
+
+    const modal = document.createElement('div');
+    modal.id = 'reminderModal';
+    modal.style = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      padding: 1.2rem;
+      width: min(92vw, 380px);
+      z-index: 2001;
+      text-align: center;
+    `;
+
+    modal.innerHTML = `
+      <h3 style="color: var(--text); margin: .2rem 0 .6rem 0;">Reminder</h3>
+      <p style="color: #6b6456;">You haven’t logged your mood today. Would you like to complete it now?</p>
+      <button class="btn" id="reminderComplete">Complete Now</button>
+      <button class="btn btn-outline" id="reminderDismiss" style="margin-left: .7rem;">Dismiss</button>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    document.getElementById('reminderComplete').onclick = () => {
+      window.location.href = 'checkin.html';
+    };
+
+    document.getElementById('reminderDismiss').onclick = () => {
+      dismissReminderPopup();
+    };
+
+    overlay.onclick = dismissReminderPopup;
+
+    reminderShown = true;
+    setTimeout(() => {
+      reminderShown = false; // Allow reminders after frequency limit
+    }, reminderFrequency);
+  }
+
+  function dismissReminderPopup() {
+    const overlay = document.getElementById('reminderOverlay');
+    const modal = document.getElementById('reminderModal');
+    if (overlay) overlay.remove();
+    if (modal) modal.remove();
+  }
+
+  function showReflectiveModal() {
+    if (reminderShown) {
+      reflectiveTimeout = setTimeout(() => {
+        document.getElementById('reflectiveOverlay').style.display = 'block';
+        document.getElementById('reflectiveModal').style.display = 'block';
+      }, 240000); // Reflective prompt appears after 4 minutes
+    } else {
+      document.getElementById('reflectiveOverlay').style.display = 'block';
+      document.getElementById('reflectiveModal').style.display = 'block';
+    }
+  }
+
+  function checkReminderConditions() {
+    const token = localStorage.getItem('token');
+    if (!token) return; // User not logged in
+
+    fetch('/api/today', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data.mood || !data.screenTime) {
+          // Trigger reminder if no entry for today
+          reminderTimeout = setTimeout(showReminderPopup, 5000); // Reminder appears after 5 seconds
+          reflectiveTimeout = setTimeout(showReflectiveModal, 15000); // Reflective prompt appears after 15 seconds
+        }
+      })
+      .catch(() => {
+        console.error('Failed to fetch today summary for reminders.');
+      });
+  }
+
+  // Start checking reminder conditions on page load
+  window.addEventListener('DOMContentLoaded', checkReminderConditions);
+  </script>
+</body>
+</html>

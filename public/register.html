@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Account</title>
+  <style>
+    :root{
+      --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+      --text:#7c6f57; --accent:#d5bdaf; --error:#b00020; --success:#2e7d32;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(213, 189, 175, 0.15);
+      width: 100%;
+      max-width: 420px;
+      padding: 2.25rem 1.75rem;
+    }
+    h2 {
+      color: var(--accent);
+      margin: 0 0 0.25em 0;
+      font-size: 1.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    p.sub {
+      color: #a08c7a;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .field {
+      margin-top: 1rem;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: .5rem;
+    }
+    label {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+    small.help {
+      color: #a08c7a;
+      font-weight: 500;
+    }
+    .control {
+      position: relative;
+      margin-top: .5rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 0.8em .9em;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #edede9;
+      font-size: 1rem;
+      color: #4a4436;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(213, 189, 175, 0.25);
+      background: #fff;
+    }
+
+    /* Password toggle button */
+    .toggle-btn {
+      position: absolute;
+      right: .4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      padding: .4rem .6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .toggle-btn:hover { background: rgba(0,0,0,.05); }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 10px;
+      padding: 0.9em 1.2em;
+      margin-top: 1.2rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .04s ease, background .2s ease;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.10);
+    }
+    button[type="submit"]:hover { background: var(--bg2); }
+    button[type="submit"]:active { transform: translateY(1px); }
+    button[disabled] { opacity: .6; cursor: not-allowed; }
+
+    .success, .error {
+      margin-top: 1rem;
+      padding: .75rem .9rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .success { color: var(--success); background: #eaf4ea; border: 1px solid #cde6cd; }
+    .error   { color: var(--error);   background: #fdeced; border: 1px solid #f5c2c7; }
+
+    /* Better spacing on mobile keyboards */
+    input, button { font-size: 16px; }
+
+    /* Add fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <div class="container">
+    <h2>Create Your Account</h2>
+    <p class="sub">Join and get started in under a minute.</p>
+
+    <form id="registerForm" novalidate>
+      <div class="field">
+        <div class="label-row">
+          <label for="name">Name</label>
+        </div>
+        <div class="control">
+          <input id="name" name="name" type="text" required autocomplete="name" placeholder="e.g. Joshua Wong" />
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="email">Email</label>
+        </div>
+        <div class="control">
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <small class="help">Min 8 chars, letters & numbers</small>
+        </div>
+        <div class="control">
+          <input id="password" name="password" type="password"
+                 required minlength="8"
+                 pattern="^(?=.*[A-Za-z])(?=.*\d).{8,}$"
+                 autocomplete="new-password"
+                 title="At least 8 characters, including letters and numbers"
+                 placeholder="Create a strong password" />
+          <button type="button" class="toggle-btn" aria-label="Toggle password visibility" data-toggle="password">Show</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="confirm_password">Confirm Password</label>
+        </div>
+        <div class="control">
+          <input id="confirm_password" name="confirm_password" type="password"
+                 required minlength="8" autocomplete="new-password"
+                 placeholder="Re-enter your password" />
+          <button type="button" class="toggle-btn" aria-label="Toggle confirm password visibility" data-toggle="confirm_password">Show</button>
+        </div>
+      </div>
+
+  <button type="submit" id="submitBtn">Sign Up</button>
+  <button type="button" style="width:100%;margin-top:0.7em;background:#e3d5ca;color:#7c6f57;border:1px solid #d6ccc2;border-radius:10px;padding:0.7em 1.2em;font-size:1rem;font-weight:600;cursor:pointer;" onclick="window.location.href='setup.html'">Return to Setup</button>
+  <div id="result" role="alert" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <script>
+    // Utility: show messages
+    const resultBox = document.getElementById('result');
+    function showError(msg) {
+      resultBox.className = 'error';
+      resultBox.textContent = msg;
+    }
+    function showSuccess(msg) {
+      resultBox.className = 'success';
+      resultBox.textContent = msg;
+    }
+
+    // Password visibility toggles
+    document.querySelectorAll('button[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-toggle');
+        const input = document.getElementById(targetId);
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+        btn.textContent = type === 'password' ? 'Show' : 'Hide';
+      });
+    });
+
+    // Prevent accidental double submits
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Live confirm password check (optional UX nice-to-have)
+    const pwd = document.getElementById('password');
+    const cpw = document.getElementById('confirm_password');
+    function passwordsMatch() { return cpw.value === pwd.value; }
+    cpw.addEventListener('input', () => {
+      if (!passwordsMatch()) {
+        cpw.setCustomValidity('Passwords do not match.');
+      } else {
+        cpw.setCustomValidity('');
+      }
+    });
+
+    // Check if passwords match before submitting
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+
+      if (password !== confirmPassword) {
+        e.preventDefault(); // Prevent form submission
+        alert('Passwords do not match!'); // Show popup alert
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Fetch values
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = pwd.value;
+      const confirm_password = cpw.value;
+
+      // Frontend validation
+      if (!name) { showError('Please enter your name.'); return; }
+      if (!/^\S+@gmail\.com$/.test(email)) {
+        showError('Email must end with @gmail.com.');
+        return;
+      }
+      if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+        showError('Password must be at least 8 characters and include letters and numbers.');
+        return;
+      }
+      if (!passwordsMatch()) { showError('Passwords do not match.'); return; }
+
+      // Disable submit to prevent double send
+      submitBtn.disabled = true;
+      showSuccess('Creating your account…');
+
+      // Send to backend
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        let result = {};
+        try { result = await res.json(); } catch {}
+
+        if (res.ok) {
+          showSuccess('Registration successful! Redirecting…');
+          // Show popup
+          alert('Account creation successful!');
+          setTimeout(() => { window.location.href = 'setup.html'; }, 1200);
+        } else if (result.error && /Email already registered/i.test(result.error)) {
+          showError('This email is already registered. Taking you to Log in…');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+        } else {
+          showError(result.error || 'Error registering. Please try again.');
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

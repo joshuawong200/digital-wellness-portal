@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In</title>
+  <style>
+    :root{
+      --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+      --text:#7c6f57; --accent:#d5bdaf; --error:#b00020; --success:#2e7d32;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(213, 189, 175, 0.15);
+      width: 100%;
+      max-width: 420px;
+      padding: 2.25rem 1.75rem;
+    }
+    h2 {
+      color: var(--accent);
+      margin: 0 0 0.25em 0;
+      font-size: 1.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    p.sub {
+      color: #a08c7a;
+      margin: 0 0 1.5rem 0;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .field { margin-top: 1rem; }
+    label {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.98rem;
+      display: block;
+    }
+    .control {
+      position: relative;
+      margin-top: .5rem;
+    }
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8em .9em;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #edede9;
+      font-size: 1rem;
+      color: #4a4436;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(213, 189, 175, 0.25);
+      background: #fff;
+    }
+
+    /* Show/Hide password button */
+    .toggle-btn {
+      position: absolute;
+      right: .4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      padding: .4rem .6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .toggle-btn:hover { background: rgba(0,0,0,.05); }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 10px;
+      padding: 0.9em 1.2em;
+      margin-top: 1.2rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .04s ease, background .2s ease;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.10);
+    }
+    button[type="submit"]:hover { background: var(--bg2); }
+    button[type="submit"]:active { transform: translateY(1px); }
+    button[disabled] { opacity: .6; cursor: not-allowed; }
+
+    .secondary-btn {
+      width: 100%;
+      margin-top: 0.7em;
+      background: #e3d5ca;
+      color: var(--text);
+      border: 1px solid var(--bg2);
+      border-radius: 10px;
+      padding: 0.7em 1.2em;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    .secondary-btn:hover { background: var(--bg2); }
+
+    .success, .error {
+      margin-top: 1rem;
+      padding: .75rem .9rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .success { color: var(--success); background: #eaf4ea; border: 1px solid #cde6cd; }
+    .error   { color: var(--error);   background: #fdeced; border: 1px solid #f5c2c7; }
+
+    /* Better spacing on mobile keyboards */
+    input, button { font-size: 16px; }
+
+    /* Add fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <div class="container">
+    <h2>Log In</h2>
+    <p class="sub">Welcome back — let’s get you in.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <div class="control">
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="control">
+          <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="Enter your password" />
+          <button type="button" class="toggle-btn" aria-label="Toggle password visibility" data-toggle="password">Show</button>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn">Log In</button>
+      <button type="button" class="secondary-btn" onclick="window.location.href='setup.html'">Return to Setup</button>
+
+      <div id="result" role="alert" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <script>
+    // Message helpers
+    const resultBox = document.getElementById('result');
+    function showError(msg){ resultBox.className='error'; resultBox.textContent=msg; }
+    function showSuccess(msg){ resultBox.className='success'; resultBox.textContent=msg; }
+
+    // Password toggle (button, not checkbox)
+    document.querySelectorAll('button[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-toggle');
+        const input = document.getElementById(targetId);
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+        btn.textContent = type === 'password' ? 'Show' : 'Hide';
+      });
+    });
+
+    // Prevent double submit
+    const submitBtn = document.getElementById('submitBtn');
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      // Basic frontend validation
+      if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Please enter a valid email address.'); return; }
+      if (!password) { showError('Please enter your password.'); return; }
+
+      submitBtn.disabled = true;
+      showSuccess('Signing you in...');
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        let result = {};
+        try { result = await res.json(); } catch {}
+
+        if (res.ok) {
+          // Save user_id to localStorage for later use (goals page, etc)
+          if (result.user && result.user.id) {
+            localStorage.setItem('user_id', result.user.id);
+          }
+          // Save JWT token to localStorage for authentication
+          if (result.token) {
+            localStorage.setItem('token', result.token);
+          }
+          showSuccess('Login successful! Welcome, ' + (result.user?.name || 'user') + '.');
+
+          // Check if goals are completed
+          const userId = result.user.id;
+          const token = result.token;
+          const goalsRes = await fetch(`/api/goals?user_id=${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const goalsData = await goalsRes.json();
+
+          console.log('Goals API Response:', goalsData); // Debugging log
+
+          if (goalsData.completed) {
+            console.log('Redirecting to portal.html'); // Debugging log
+            setTimeout(() => { window.location.href = 'portal.html'; }, 1000);
+          } else {
+            console.log('Redirecting to goals.html'); // Debugging log
+            setTimeout(() => { window.location.href = 'goals.html'; }, 1000);
+          }
+        } else {
+          // Display the specific error message returned by the backend
+          showError(result.error || 'Error logging in. Please try again.');
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        showError('Network error. Please check your connection and try again.');
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

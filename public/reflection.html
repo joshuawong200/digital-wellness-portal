@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood Entry</title>
+  <style>
+    :root{
+      --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+      --text:#7c6f57; --accent:#d5bdaf; --error:#b00020; --success:#2e7d32;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      color:#4a4436;
+      padding:1rem;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .wrap{ width:100%; max-width: 520px; }
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow: 0 4px 24px rgba(213,189,175,.15);
+      padding: 1.5rem;
+    }
+
+    h1{
+      margin:0 0 .25rem 0;
+      color: var(--accent);
+      font-size:1.6rem;
+      font-weight:800;
+      text-align:center;
+    }
+    p.sub{
+      margin:.1rem 0 1rem 0;
+      color:#a08c7a;
+      text-align:center;
+      font-size:.95rem;
+    }
+
+    label{
+      display:block;
+      margin-top:1rem;
+      color: var(--text);
+      font-weight:700;
+    }
+    .control{ margin-top:.5rem; }
+
+    textarea{
+      width:100%;
+      min-height:140px;
+      resize: vertical;
+      padding:.9rem;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#edede9;
+      font-size:1rem;
+      color:#4a4436;
+      outline:none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    textarea:focus{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(213,189,175,.25);
+      background:#fff;
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:.4rem;
+    }
+    .hint{ color:#a08c7a; font-size:.9rem; }
+    .count{ color:#a08c7a; font-size:.9rem; }
+
+    .actions{ margin-top:1.2rem; display:flex; flex-direction:column; gap:.6rem; }
+    .btn{
+      width:100%; background: var(--border); color: var(--text);
+      border:none; border-radius:10px; padding:.9rem 1.2rem;
+      font-size:1.05rem; font-weight:800; cursor:pointer;
+      transition: background .2s ease, transform .04s ease;
+      box-shadow: 0 2px 8px rgba(213,189,175,.10);
+    }
+    .btn:hover{ background: var(--bg2); }
+    .btn:active{ transform: translateY(1px); }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+
+    .btn-secondary{
+      background:#e3d5ca; border:1px solid var(--bg2);
+      font-weight:700;
+    }
+    .btn-secondary:hover{ background: var(--bg2); }
+
+    #result{ margin-top:.9rem; }
+    .success, .error{
+      padding:.75rem .9rem; border-radius:10px; font-weight:700;
+      border:1px solid transparent;
+    }
+    .success{ color: var(--success); background:#eaf4ea; border-color:#cde6cd; }
+    .error{ color: var(--error); background:#fdeced; border-color:#f5c2c7; }
+
+    /* Modal (optional success confirmation) */
+    .overlay{
+      display:none; position:fixed; inset:0; background: rgba(0,0,0,.35); z-index:1000;
+    }
+    .modal{
+      display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%);
+      background:#fff; border:1px solid var(--border); border-radius:16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      padding: 1.2rem; width:min(92vw, 380px); z-index:1001; text-align:center;
+    }
+    .modal h3{ margin:.2rem 0 .6rem 0; color: var(--text); }
+    .modal p{ margin:.25rem 0 .9rem 0; color:#6b6456; }
+
+    /* Add fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <div class="wrap">
+    <div class="card">
+      <h1>Mood Entry</h1>
+      <p class="sub">Take a minute to reflect on your day.</p>
+
+      <form id="moodEntryForm" novalidate>
+        <label for="moodReflection">How are you feeling today?</label>
+        <div class="control">
+          <textarea id="moodReflection" name="moodReflection" placeholder="Write about your mood…" maxlength="1000"></textarea>
+          <div class="row">
+            <span class="hint">Tip: a few sentences are great—no need to overthink it.</span>
+            <span class="count" id="charCount">0 / 1000</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn" id="submitBtn">Submit</button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='portal.html'">Return to Portal</button>
+        </div>
+
+        <div id="result" role="alert" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="successModal">
+    <h3>✅ Entry saved</h3>
+    <p>Nice work staying mindful today.</p>
+    <button class="btn" id="closePopup">Continue</button>
+  </div>
+
+  <script>
+    const form = document.getElementById('moodEntryForm');
+    const textarea = document.getElementById('moodReflection');
+    const count = document.getElementById('charCount');
+    const resultBox = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('successModal');
+
+    function showError(msg){ resultBox.className='error'; resultBox.textContent=msg; }
+    function showSuccess(msg){ resultBox.className='success'; resultBox.textContent=msg; }
+    function clearMsg(){ resultBox.className=''; resultBox.textContent=''; }
+
+    // live character counter
+    function updateCount(){
+      count.textContent = `${textarea.value.length} / ${textarea.maxLength}`;
+    }
+    textarea.addEventListener('input', updateCount);
+    updateCount();
+
+    function openModal(){ overlay.style.display='block'; modal.style.display='block'; }
+    function closeModal(){ overlay.style.display='none'; modal.style.display='none'; }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearMsg();
+
+      const reflection = textarea.value.trim();
+
+      if (!reflection){
+        showError('Please write something about your mood.');
+        textarea.focus();
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('reflectionText', reflection);
+
+      try {
+        submitBtn.disabled = true;
+        showSuccess('Saving your entry…');
+
+        const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+        console.log('Retrieved token:', token); // Debugging log
+        const response = await fetch('/api/reflection', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Authorization': `Bearer ${token}` // Add Authorization header
+          }
+        });
+
+        let resBody = {};
+        try { resBody = await response.json(); } catch {}
+
+        if (response.ok) {
+          showSuccess('Mood entry saved!');
+          openModal();
+        } else {
+          showError(resBody.error || 'Failed to save mood entry.');
+          submitBtn.disabled = false;
+        }
+      } catch (error) {
+        showError('An error occurred. Please try again.');
+        submitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('closePopup').addEventListener('click', () => {
+      closeModal();
+      window.location.href = '/portal.html';  // Redirect to portal.html after reflection
+    });
+    overlay.addEventListener('click', closeModal);
+
+    // Function to parse query parameters
+    function getQueryParams() {
+      const params = {};
+      const queryString = window.location.search;
+      if (queryString) {
+        const pairs = queryString.substring(1).split('&');
+        pairs.forEach(pair => {
+          const [key, value] = pair.split('=');
+          params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        });
+      }
+      return params;
+    }
+
+    // Handle redirect parameter
+    const queryParams = getQueryParams();
+    if (queryParams.redirect) {
+      console.log(`Redirect parameter detected: ${queryParams.redirect}`);
+      // Perform any specific actions based on the redirect parameter
+    }
+  </script>
+</body>
+</html>

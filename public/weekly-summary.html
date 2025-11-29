@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Wellness Summary</title>
+  <style>
+    :root {
+      --bg1:#edede9; --bg2:#d6ccc2; --card:#f5ebe0; --border:#e3d5ca;
+      --text:#7c6f57; --accent:#d5bdaf; --success:#2e7d32; --danger:#b00020;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    header {
+      width: 100%;
+      max-width: 980px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(213,189,175,.18);
+      padding: 1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+    .container {
+      max-width: 700px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(213,189,175,.15);
+      padding: 2rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s cubic-bezier(.4,.2,.2,1), transform .7s cubic-bezier(.4,.2,.2,1);
+    }
+    .container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    h2 {
+      color: var(--accent);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      color: #6b6456;
+      font-size: 1.05rem;
+    }
+    a {
+      display: inline-block;
+      margin-top: 1.2rem;
+      background: var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: .7rem 1.3rem;
+      box-shadow: 0 2px 8px rgba(213,189,175,.1);
+      transition: background .2s ease, transform .04s ease;
+    }
+    a:hover { background: var(--bg2); }
+    a:active { transform: translateY(1px); }
+
+    .emoji {
+      font-size: 3.2rem;
+      display: block;
+      margin-bottom: .4rem;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--border);
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      transition: background 0.2s ease, transform 0.04s ease;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.1);
+    }
+    .btn:hover {
+      background: var(--bg2);
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="summaryCard">
+    <span class="emoji">🚧</span>
+    <h2>Work in Progress</h2>
+    <p>This section is still under development. Please check back soon for your personalized weekly wellness insights and progress charts.</p>
+    <a href="portal.html" class="btn">Return to Portal</a>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('summaryCard').classList.add('visible');
+      }, 150);
+    });
+  </script>
+</body>
+</html>

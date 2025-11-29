@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goals Options</title>
+  <style>
+    :root {
+      --bg1: #edede9;
+      --bg2: #d6ccc2;
+      --card: #f5ebe0;
+      --border: #e3d5ca;
+      --text: #7c6f57;
+      --accent: #d5bdaf;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      color: #4a4436;
+      padding: 0; /* Removed padding to avoid extra space */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensures full height coverage */
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(213, 189, 175, 0.15);
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      margin: 1rem; /* Added margin to prevent overlap */
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      line-height: 1.4; /* Improved line spacing */
+    }
+
+    p {
+      color: #6b6456;
+      margin-bottom: 1.5rem;
+      line-height: 1.6; /* Improved readability */
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 10px;
+      padding: 0.9rem 1.2rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.04s ease;
+      box-shadow: 0 2px 8px rgba(213, 189, 175, 0.1);
+      margin-bottom: 1rem;
+    }
+
+    .btn:hover {
+      background: var(--bg2);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background: #e3d5ca;
+      border: 1px solid var(--bg2);
+      font-weight: 700;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg2);
+    }
+
+    #goalsForm {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .question {
+      margin-bottom: 1.5rem;
+    }
+
+    .q-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.4; /* Improved spacing */
+    }
+
+    .options {
+      margin-left: 1rem;
+    }
+
+    .option {
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .option input {
+      margin-right: 0.5rem; /* Added spacing between input and label */
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Your Goals are Already Set</h1>
+    <p>Here are your current goals:</p>
+
+    <form id="goalsForm" style="margin-top: 1.5rem; text-align: left;">
+      <div class="question">
+        <div class="q-title">1. How aware are you of your daily screen time right now?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="awareness" value="not_aware" disabled> Not aware at all</label>
+          <label class="option"><input type="radio" name="awareness" value="somewhat_aware" disabled> Somewhat aware</label>
+          <label class="option"><input type="radio" name="awareness" value="very_aware" disabled> Very aware</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">2. What would you like to achieve with this app?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="achieve" value="reduce_screen_time" disabled> Reduce my daily screen time</label>
+          <label class="option"><input type="checkbox" name="achieve" value="manage_mood" disabled> Better manage my mood/emotions</label>
+          <label class="option"><input type="checkbox" name="achieve" value="journaling_habit" disabled> Build a journaling habit</label>
+          <label class="option"><input type="checkbox" name="achieve" value="track_habits" disabled> Track and understand my digital habits</label>
+          <label class="option"><input type="checkbox" name="achieve" value="stay_consistent" disabled> Stay consistent with healthy goals</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">3. What kind of reminders/nudges work best for you?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="reminder_type" value="gentle" disabled> Gentle daily reminders</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="motivational" disabled> Motivational / encouraging messages</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="firm" disabled> Direct and firm prompts</label>
+          <label class="option"><input type="checkbox" name="reminder_type" value="none" disabled> No reminders (I’ll manage myself)</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">4. On average, how many hours do you spend on your phone weekly?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="weekly_screen_time" value="7" disabled> Less than 7 hours (≈1 hour/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="14" disabled> 7–14 hours (≈1–2 hours/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="28" disabled> 15–28 hours (≈2–4 hours/day)</label>
+          <label class="option"><input type="radio" name="weekly_screen_time" value="29" disabled> More than 28 hours (4+ hours/day)</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-title">5. Which area is most important for you right now?</div>
+        <div class="options">
+          <label class="option"><input type="checkbox" name="priority_area" value="reduce_screen_time" disabled> Reducing screen time</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="improve_mood" disabled> Improving mood awareness</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="journaling_consistency" disabled> Building consistency with journaling</label>
+          <label class="option"><input type="checkbox" name="priority_area" value="digital_balance" disabled> Achieving overall digital balance</label>
+        </div>
+      </div>
+    </form>
+
+    <div id="goalsContainer"></div>
+
+    <button class="btn btn-secondary" onclick="location.href='portal.html'" style="margin-top: 2rem;">Return to Portal</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('user_id'); // Retrieve user_id from localStorage
+      console.log('Retrieved token:', token); // Debugging log
+      console.log('Retrieved user_id:', userId); // Debugging log
+
+      if (!token || !userId) {
+        document.getElementById('goalsContainer').innerHTML = '<p style="color: var(--danger);">You are not logged in. Please log in to view your goals.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/goals?user_id=${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('API Response Status:', response.status); // Debugging log
+        if (response.ok) {
+          const goals = await response.json();
+          console.log('Fetched goals:', JSON.stringify(goals, null, 2)); // Detailed debugging log
+
+          if (goals) {
+            // Populate form fields with saved goals
+            const awarenessInput = document.querySelector(`input[name="awareness"][value="${goals.awareness}"]`);
+            if (awarenessInput) {
+              awarenessInput.checked = true;
+            } else {
+              console.warn('Awareness value not found in form:', goals.awareness);
+            }
+
+            const weeklyScreenTimeInput = document.querySelector(`input[name="weekly_screen_time"][value="${goals.weekly_screen_time}"]`);
+            if (weeklyScreenTimeInput) {
+              weeklyScreenTimeInput.checked = true;
+            } else {
+              console.warn('Weekly screen time value not found in form:', goals.weekly_screen_time);
+            }
+
+            const achieveValues = Array.isArray(goals.achieve) ? goals.achieve : JSON.parse(goals.achieve || '[]');
+            console.log('Achieve values:', achieveValues); // Debugging log
+            achieveValues.forEach(value => {
+              const checkbox = document.querySelector(`input[name="achieve"][value="${value}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              } else {
+                console.warn('Achieve value not found in form:', value);
+              }
+            });
+
+            const reminderTypeValues = Array.isArray(goals.reminder_type) ? goals.reminder_type : JSON.parse(goals.reminder_type || '[]');
+            console.log('Reminder type values:', reminderTypeValues); // Debugging log
+            reminderTypeValues.forEach(value => {
+              const checkbox = document.querySelector(`input[name="reminder_type"][value="${value}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              } else {
+                console.warn('Reminder type value not found in form:', value);
+              }
+            });
+
+            const priorityAreaValues = Array.isArray(goals.priority_area) ? goals.priority_area : JSON.parse(goals.priority_area || '[]');
+            console.log('Priority area values:', priorityAreaValues); // Debugging log
+            priorityAreaValues.forEach(value => {
+              const checkbox = document.querySelector(`input[name="priority_area"][value="${value}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              } else {
+                console.warn('Priority area value not found in form:', value);
+              }
+            });
+          } else {
+            document.getElementById('goalsContainer').innerHTML = '<p>No goals have been set yet.</p>';
+          }
+        } else {
+          const errorText = await response.text();
+          console.error('API Error Response:', errorText); // Debugging log
+          document.getElementById('goalsContainer').innerHTML = '<p style="color: var(--danger);">Failed to fetch goals. Please try again later.</p>';
+        }
+      } catch (error) {
+        console.error('Error fetching goals:', error); // Debugging log
+        document.getElementById('goalsContainer').innerHTML = '<p style="color: var(--danger);">Error fetching goals. Please check your connection.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
